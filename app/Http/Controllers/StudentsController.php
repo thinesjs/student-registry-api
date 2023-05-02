@@ -46,7 +46,7 @@ class StudentsController extends Controller
 
         $validate = Validator::make($input, [
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'address' => 'required',
             'assigned_course' => 'required'
         ]);
@@ -82,7 +82,7 @@ class StudentsController extends Controller
         $input = $request->all();
         $validate = Validator::make($input, [
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'address' => 'required',
             'assigned_course' => 'required'
         ]);
