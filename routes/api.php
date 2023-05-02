@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\APIController;
+use App\Http\Controllers\StudentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+// AUTH FOR STAFF
+Route::controller(APIController::class)->group(function() {
+    Route::post('login', 'userLogin');
+    Route::post('register', 'userRegister');
+});
+
+// CRUD FOR STUDENTS DATA
+Route::middleware('auth:api')->group( function () {
+    Route::get('logout', [APIController::class, 'userLogout']);
+    Route::resource('students', StudentsController::class);
 });
