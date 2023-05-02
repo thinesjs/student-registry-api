@@ -19,8 +19,8 @@ class StudentsController extends Controller
     public function index(Request $request): JsonResponse
     {
         if(!isset($request->name) && !isset($request->email)){
-            $students = Student::all();
-            return response()->json(['status' => 'success', 'data' => StudentsResource::collection($students)], 200);
+            $students = Student::paginate(5);
+            return response()->json(['status' => 'success', 'data' => StudentsResource::collection($students)->response()->getData(true)], 200);
         }elseif(isset($request->name)){
             $students = Student::where('name', $request->name)->get();
             if($students == "[]") return response()->json(['status' => 'success', 'data' =>'no records']); else; return response()->json(['status' => 'success', 'query' => $request->name,'data' => StudentsResource::collection($students)], 200);
