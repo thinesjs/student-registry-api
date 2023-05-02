@@ -51,7 +51,7 @@ class StudentsController extends Controller
             'assigned_course' => 'required'
         ]);
 
-        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid inputs'], 422);
+        if($validate->fails()) return response()->json(['status' => 'error', 'message' => $validate->errors()], 422);
 
         $newStudent = Student::create($input);
         return response()->json(['status' => 'success', 'data' => new StudentsResource($newStudent)], 200);
@@ -87,7 +87,7 @@ class StudentsController extends Controller
             'assigned_course' => 'required'
         ]);
 
-        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid inputs'], 422);
+        if($validate->fails()) return response()->json(['status' => 'error', 'message' => $validate->errors()], 422);
 
         $student->name = $request->name;
         $student->email = $request->email;
