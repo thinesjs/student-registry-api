@@ -20,7 +20,7 @@ class APIController extends Controller
             'password' => 'required',
         ]);
 
-        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid inputs'], 401);
+        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid inputs'], 422);
 
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
             $user = Auth::user();
@@ -43,7 +43,7 @@ class APIController extends Controller
             'confirm_password' => 'required|same:password',
         ]);
 
-        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid or missing parameters'], 401);
+        if($validate->fails()) return response()->json(['status' => 'error', 'message' => 'invalid or missing parameters'], 422);
 
         $inputs = $request->all();
         $inputs['password'] = bcrypt($request->password);
@@ -53,6 +53,9 @@ class APIController extends Controller
         return response()->json(['status' => 'success', 'access_token' => $access_token], 200);
     }
 
+    /**
+     * user logout
+     */
     public function userLogout(User $user)
     {
         $accessToken = Auth::guard('api')->user()->token();

@@ -13,9 +13,11 @@ use Maatwebsite\Excel\Exceptions\NoTypeDetectedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use ErrorException;
 use Auth;
 use Exception;
+
 class StudentsController extends Controller
 {
     /**
@@ -33,13 +35,6 @@ class StudentsController extends Controller
             $students = Student::where('email', $request->email)->get();
             if(is_null($students)) return response()->json(['status' => 'success', 'data' =>'no records']); else; return response()->json(['status' => 'success', 'query' => $request->email,'data' => StudentsResource::collection($students)], 200);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
-    {
     }
 
     /**
@@ -84,14 +79,6 @@ class StudentsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Student $student)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Student $student)
@@ -110,10 +97,13 @@ class StudentsController extends Controller
         $student->email = $request->email;
         $student->address = $request->address;
         $student->assigned_course = $request->assigned_course;
-        
-        $student->save();
 
-        if(is_null($student)) return response()->json(['status' => 'success', 'data' =>'no student found by the id'], 422); else return response()->json(['status' => 'success', 'data' => new StudentsResource($student)], 200);
+        try{
+            $student->save();
+            return response()->json(['status' => 'success', 'data' => new StudentsResource($student)], 200);
+        }catch(NotFoundHttpException $ex){
+            return response()->json(['status' => 'success', 'data' =>'no student found by the id'], 422);
+        }
     }
 
     /**
