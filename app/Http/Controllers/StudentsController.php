@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\StudentsResource;
+use App\Imports\StudentImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Exceptions\NoTypeDetectedException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\PostTooLargeException;
+use Illuminate\Database\QueryException;
+use ErrorException;
 use Auth;
 use Exception;
-use PhpParser\Node\Stmt\TryCatch;
-
 class StudentsController extends Controller
 {
     /**
@@ -42,8 +47,20 @@ class StudentsController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $input = $request->all();
+        if(isset($request->file)){
 
+            try{
+                Excel::import(new StudentImport, request()->file('file'));
+                return response()->json(['status' => 'success', 'data' => "import success" ], 200);
+            }catch(ErrorException $ex){
+                return response()->json(['status' => 'error', 'message' => "import failed" ], 422);
+            }catch(NoTypeDetectedException $ex){
+                return response()->json(['status' => 'error', 'message' => "unrecognized file type" ], 422);
+            }catch(QueryException $ex){
+                return response()->json(['status' => 'error', 'message' => "possible duplicate entry" ], 422);
+            }
+        }
+        $input = $request->all();
         $validate = Validator::make($input, [
             'name' => 'required',
             'email' => 'required|email',
