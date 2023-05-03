@@ -43,7 +43,6 @@ class StudentsController extends Controller
     public function store(Request $request): JsonResponse
     {
         if(isset($request->file)){
-
             try{
                 Excel::import(new StudentImport, request()->file('file'));
                 return response()->json(['status' => 'success', 'data' => "import success" ], 200);
